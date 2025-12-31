@@ -21,7 +21,23 @@
     "format": "prettier --write \"src/**/*.ts\"",
     "format:check": "prettier --check \"src/**/*.ts\""
   },
-  "keywords": ["delivery", "express", "typescript", "postgresql", "postgis", "socket.io"],
+  "keywords": [
+    "delivery",
+    "express",
+    "typescript",
+    "postgresql",
+    "postgis",
+    "socket.io",
+    "rest-api",
+    "backend",
+    "nodejs",
+    "prisma",
+    "redis",
+    "stripe",
+    "real-time",
+    "geolocation",
+    "multi-vendor"
+  ],
   "author": "Backend Architect",
   "license": "MIT",
   "dependencies": {
@@ -72,5 +88,13 @@
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=9.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/delivery-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/delivery-api/issues"
+  },
+  "homepage": "https://github.com/yourusername/delivery-api#readme"
 }
