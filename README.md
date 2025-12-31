@@ -262,6 +262,10 @@ See `.env.example` for all required environment variables.
 - [Examples](./EXAMPLES.md) - API usage examples
 - [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
 - [PR Checklist](./PULL_REQUEST_CHECKLIST.md) - Pre-submission checklist
+- [Glossary](./GLOSSARY.md) - Technical terms glossary
+- [Credits](./CREDITS.md) - Acknowledgments and credits
+- [Sponsors](./SPONSORS.md) - Project sponsors
+- [Benchmarks](./BENCHMARK.md) - Performance benchmarks
 
 ## 📄 License
 
