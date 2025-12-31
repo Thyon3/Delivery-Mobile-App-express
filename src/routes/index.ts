@@ -14,6 +14,7 @@ import analyticsRoutes from './analytics.routes';
 import notificationRoutes from './notification.routes';
 import searchRoutes from './search.routes';
 import uploadRoutes from './upload.routes';
+import promotionRoutes from './promotion.routes';
 
 const router = Router();
 
@@ -38,5 +39,6 @@ router.use('/analytics', analyticsRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/search', searchRoutes);
 router.use('/upload', uploadRoutes);
+router.use('/promotions', promotionRoutes);
 
 export default router;
