@@ -10,6 +10,9 @@ import paymentRoutes from './payment.routes';
 import userRoutes from './user.routes';
 import driverRoutes from './driver.routes';
 import reviewRoutes from './review.routes';
+import analyticsRoutes from './analytics.routes';
+import notificationRoutes from './notification.routes';
+import searchRoutes from './search.routes';
 
 const router = Router();
 
@@ -30,5 +33,8 @@ router.use('/payments', paymentRoutes);
 router.use('/users', userRoutes);
 router.use('/drivers', driverRoutes);
 router.use('/reviews', reviewRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/search', searchRoutes);
 
 export default router;
