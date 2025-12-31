@@ -1,7 +1,7 @@
 {
   "name": "delivery-api",
   "version": "1.0.0",
-  "description": "Production-ready Express.js REST API for Multi-vendor Delivery Application",
+  "description": "Production-ready Express.js REST API for Multi-vendor Delivery Application supporting Customers, Drivers, and Restaurants with real-time tracking, geolocation services, and payment integration",
   "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon --exec ts-node src/server.ts",
