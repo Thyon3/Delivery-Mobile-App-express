@@ -13,6 +13,7 @@ import reviewRoutes from './review.routes';
 import analyticsRoutes from './analytics.routes';
 import notificationRoutes from './notification.routes';
 import searchRoutes from './search.routes';
+import uploadRoutes from './upload.routes';
 
 const router = Router();
 
@@ -36,5 +37,6 @@ router.use('/reviews', reviewRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/search', searchRoutes);
+router.use('/upload', uploadRoutes);
 
 export default router;
