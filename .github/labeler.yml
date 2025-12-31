@@ -1,0 +1,33 @@
+# Labels for automatic PR labeling
+
+'documentation':
+  - '**/*.md'
+  - 'docs/**/*'
+
+'dependencies':
+  - 'package.json'
+  - 'package-lock.json'
+
+'configuration':
+  - '**/*.json'
+  - '**/*.yml'
+  - '**/*.yaml'
+  - '.env.example'
+
+'backend':
+  - 'src/**/*'
+
+'database':
+  - 'prisma/**/*'
+
+'ci/cd':
+  - '.github/**/*'
+
+'docker':
+  - 'Dockerfile'
+  - 'docker-compose.yml'
+  - '.dockerignore'
+
+'tests':
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
