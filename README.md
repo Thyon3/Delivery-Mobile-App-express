@@ -259,6 +259,9 @@ See `.env.example` for all required environment variables.
 - [Contributing](./CONTRIBUTING.md) - How to contribute
 - [Code of Conduct](./CODE_OF_CONDUCT.md) - Community guidelines
 - [Changelog](./CHANGELOG.md) - Version history
+- [Examples](./EXAMPLES.md) - API usage examples
+- [Troubleshooting](./TROUBLESHOOTING.md) - Common issues and solutions
+- [PR Checklist](./PULL_REQUEST_CHECKLIST.md) - Pre-submission checklist
 
 ## 📄 License
 
