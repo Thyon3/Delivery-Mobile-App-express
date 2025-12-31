@@ -108,6 +108,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2024-01-02
+
+### Added
+
+#### GraphQL Support
+- Complete GraphQL API with Yoga server
+- GraphQL schema with queries, mutations, and subscriptions
+- Real-time subscriptions for orders and driver tracking
+- GraphiQL interface for development
+- Comprehensive GraphQL documentation
+
+#### New Features
+- Promotion and coupon system with validation
+- Favorites/wishlist functionality for restaurants
+- Admin dashboard with comprehensive statistics
+- Performance statistics for restaurants, drivers, and customers
+- Additional email templates for various events
+- Image processing utilities
+- Order number generation utilities
+
+#### Enhanced Features
+- Restaurant performance metrics
+- Driver performance tracking
+- Customer statistics dashboard
+- Revenue analytics by date range
+- User activity monitoring
+- Top-selling items tracking
+
+#### Documentation
+- GraphQL API documentation (GRAPHQL.md)
+- Complete feature list (FEATURES.md) - 200+ features
+- Database migration guide (MIGRATION_GUIDE.md)
+- Enhanced README with quick links
+
+### Improved
+- Better commit history with 140+ granular commits
+- Organized route structure
+- Enhanced type definitions
+- Better code organization
+
+## [Unreleased-Old]
+
 ### Planned Features
 - Multi-language support
 - Push notifications (FCM/APNS)
