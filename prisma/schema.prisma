@@ -1,0 +1,567 @@
+// Prisma Schema for Multi-vendor Delivery Application
+// Supports PostgreSQL with PostGIS extension for geolocation features
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis(version: "3.4.0")]
+}
+
+// =============================================
+// ENUMS
+// =============================================
+
+enum UserRole {
+  CUSTOMER
+  DRIVER
+  RESTAURANT_OWNER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum DriverStatus {
+  OFFLINE
+  ONLINE
+  BUSY
+  ON_BREAK
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  PREPARING
+  READY_FOR_PICKUP
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CARD
+  CASH
+  WALLET
+  UPI
+}
+
+enum RestaurantStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  PENDING_APPROVAL
+}
+
+enum VehicleType {
+  BIKE
+  SCOOTER
+  CAR
+  BICYCLE
+}
+
+// =============================================
+// USER MANAGEMENT
+// =============================================
+
+model User {
+  id                String      @id @default(uuid())
+  email             String      @unique
+  phone             String?     @unique
+  passwordHash      String
+  role              UserRole
+  status            UserStatus  @default(ACTIVE)
+  firstName         String
+  lastName          String
+  profileImage      String?
+  isEmailVerified   Boolean     @default(false)
+  isPhoneVerified   Boolean     @default(false)
+  lastLogin         DateTime?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  refreshTokens     RefreshToken[]
+  otpVerifications  OtpVerification[]
+  customerProfile   Customer?
+  driverProfile     Driver?
+  restaurantOwner   RestaurantOwner?
+  addresses         Address[]
+  orders            Order[]
+  reviews           Review[]
+  notifications     Notification[]
+  walletTransactions WalletTransaction[]
+
+  @@index([email])
+  @@index([phone])
+  @@index([role])
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  isRevoked Boolean  @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  userId    String
+  otp       String
+  type      String   // EMAIL or PHONE
+  expiresAt DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("otp_verifications")
+}
+
+// =============================================
+// CUSTOMER PROFILE
+// =============================================
+
+model Customer {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  favoriteRestaurants String[] // Array of restaurant IDs
+  totalOrders      Int      @default(0)
+  walletBalance    Decimal  @default(0) @db.Decimal(10, 2)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("customers")
+}
+
+// =============================================
+// DRIVER PROFILE & TRACKING
+// =============================================
+
+model Driver {
+  id                String        @id @default(uuid())
+  userId            String        @unique
+  licenseNumber     String        @unique
+  vehicleType       VehicleType
+  vehicleNumber     String
+  status            DriverStatus  @default(OFFLINE)
+  currentLatitude   Decimal?      @db.Decimal(10, 8)
+  currentLongitude  Decimal?      @db.Decimal(11, 8)
+  // PostGIS Point for spatial queries
+  currentLocation   Unsupported("geometry(Point, 4326)")?
+  rating            Decimal       @default(0) @db.Decimal(3, 2)
+  totalDeliveries   Int           @default(0)
+  walletBalance     Decimal       @default(0) @db.Decimal(10, 2)
+  isAvailable       Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries        Delivery[]
+  earnings          DriverEarning[]
+
+  @@index([status])
+  @@index([currentLocation], type: Gist)
+  @@map("drivers")
+}
+
+model DriverEarning {
+  id          String   @id @default(uuid())
+  driverId    String
+  orderId     String
+  amount      Decimal  @db.Decimal(10, 2)
+  description String?
+  createdAt   DateTime @default(now())
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+
+  @@index([driverId])
+  @@map("driver_earnings")
+}
+
+// =============================================
+// RESTAURANT MANAGEMENT
+// =============================================
+
+model RestaurantOwner {
+  id          String       @id @default(uuid())
+  userId      String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurants Restaurant[]
+
+  @@map("restaurant_owners")
+}
+
+model Restaurant {
+  id               String           @id @default(uuid())
+  ownerId          String
+  name             String
+  description      String?
+  coverImage       String?
+  logo             String?
+  phone            String
+  email            String?
+  status           RestaurantStatus @default(PENDING_APPROVAL)
+  rating           Decimal          @default(0) @db.Decimal(3, 2)
+  totalReviews     Int              @default(0)
+  latitude         Decimal          @db.Decimal(10, 8)
+  longitude        Decimal          @db.Decimal(11, 8)
+  // PostGIS Point for spatial queries
+  location         Unsupported("geometry(Point, 4326)")
+  address          String
+  city             String
+  state            String
+  postalCode       String
+  country          String
+  cuisineTypes     String[]         // ["Italian", "Chinese", etc.]
+  openingTime      String           // "09:00"
+  closingTime      String           // "22:00"
+  isOpen           Boolean          @default(true)
+  deliveryFee      Decimal          @default(0) @db.Decimal(10, 2)
+  minimumOrder     Decimal          @default(0) @db.Decimal(10, 2)
+  estimatedDeliveryTime Int         @default(30) // in minutes
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  owner            RestaurantOwner  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  categories       Category[]
+  menuItems        MenuItem[]
+  orders           Order[]
+  reviews          Review[]
+
+  @@index([ownerId])
+  @@index([status])
+  @@index([location], type: Gist)
+  @@map("restaurants")
+}
+
+model Category {
+  id           String     @id @default(uuid())
+  restaurantId String
+  name         String
+  description  String?
+  displayOrder Int        @default(0)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  menuItems    MenuItem[]
+
+  @@index([restaurantId])
+  @@map("categories")
+}
+
+model MenuItem {
+  id           String   @id @default(uuid())
+  restaurantId String
+  categoryId   String
+  name         String
+  description  String?
+  image        String?
+  price        Decimal  @db.Decimal(10, 2)
+  discountPrice Decimal? @db.Decimal(10, 2)
+  isAvailable  Boolean  @default(true)
+  isVegetarian Boolean  @default(false)
+  isVegan      Boolean  @default(false)
+  preparationTime Int   @default(15) // in minutes
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  category     Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  addons       MenuItemAddon[]
+  orderItems   OrderItem[]
+
+  @@index([restaurantId])
+  @@index([categoryId])
+  @@index([isAvailable])
+  @@map("menu_items")
+}
+
+model MenuItemAddon {
+  id         String   @id @default(uuid())
+  menuItemId String
+  name       String
+  price      Decimal  @db.Decimal(10, 2)
+  isAvailable Boolean @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+
+  @@index([menuItemId])
+  @@map("menu_item_addons")
+}
+
+// =============================================
+// ORDER MANAGEMENT (STATE MACHINE)
+// =============================================
+
+model Order {
+  id                   String        @id @default(uuid())
+  orderNumber          String        @unique
+  customerId           String
+  restaurantId         String
+  status               OrderStatus   @default(PENDING)
+  subtotal             Decimal       @db.Decimal(10, 2)
+  deliveryFee          Decimal       @db.Decimal(10, 2)
+  tax                  Decimal       @db.Decimal(10, 2)
+  discount             Decimal       @default(0) @db.Decimal(10, 2)
+  totalAmount          Decimal       @db.Decimal(10, 2)
+  paymentMethod        PaymentMethod
+  paymentStatus        PaymentStatus @default(PENDING)
+  specialInstructions  String?
+  estimatedDeliveryTime DateTime?
+  acceptedAt           DateTime?
+  preparingAt          DateTime?
+  readyAt              DateTime?
+  pickedUpAt           DateTime?
+  deliveredAt          DateTime?
+  cancelledAt          DateTime?
+  cancellationReason   String?
+  // Optimistic locking for race condition prevention
+  version              Int           @default(0)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  customer             User          @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  restaurant           Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Restrict)
+  items                OrderItem[]
+  delivery             Delivery?
+  payment              Payment?
+  statusHistory        OrderStatusHistory[]
+
+  @@index([customerId])
+  @@index([restaurantId])
+  @@index([status])
+  @@index([orderNumber])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String   @id @default(uuid())
+  orderId    String
+  menuItemId String
+  quantity   Int
+  price      Decimal  @db.Decimal(10, 2)
+  addons     Json?    // Store selected addons
+  createdAt  DateTime @default(now())
+
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Restrict)
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model OrderStatusHistory {
+  id        String      @id @default(uuid())
+  orderId   String
+  status    OrderStatus
+  notes     String?
+  createdAt DateTime    @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_status_history")
+}
+
+// =============================================
+// DELIVERY & TRACKING
+// =============================================
+
+model Delivery {
+  id                 String   @id @default(uuid())
+  orderId            String   @unique
+  driverId           String?
+  pickupLatitude     Decimal  @db.Decimal(10, 8)
+  pickupLongitude    Decimal  @db.Decimal(11, 8)
+  deliveryLatitude   Decimal  @db.Decimal(10, 8)
+  deliveryLongitude  Decimal  @db.Decimal(11, 8)
+  distance           Decimal  @db.Decimal(10, 2) // in kilometers
+  driverEarnings     Decimal  @default(0) @db.Decimal(10, 2)
+  assignedAt         DateTime?
+  pickedUpAt         DateTime?
+  deliveredAt        DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  order              Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  driver             Driver?  @relation(fields: [driverId], references: [id], onDelete: SetNull)
+  trackingPoints     DeliveryTracking[]
+
+  @@index([orderId])
+  @@index([driverId])
+  @@map("deliveries")
+}
+
+model DeliveryTracking {
+  id         String   @id @default(uuid())
+  deliveryId String
+  latitude   Decimal  @db.Decimal(10, 8)
+  longitude  Decimal  @db.Decimal(11, 8)
+  timestamp  DateTime @default(now())
+
+  delivery   Delivery @relation(fields: [deliveryId], references: [id], onDelete: Cascade)
+
+  @@index([deliveryId])
+  @@index([timestamp])
+  @@map("delivery_tracking")
+}
+
+// =============================================
+// PAYMENT SYSTEM
+// =============================================
+
+model Payment {
+  id                String        @id @default(uuid())
+  orderId           String        @unique
+  amount            Decimal       @db.Decimal(10, 2)
+  paymentMethod     PaymentMethod
+  status            PaymentStatus @default(PENDING)
+  stripePaymentId   String?       @unique
+  stripeSessionId   String?
+  transactionId     String?       @unique
+  metadata          Json?
+  failureReason     String?
+  paidAt            DateTime?
+  refundedAt        DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@map("payments")
+}
+
+model WalletTransaction {
+  id            String   @id @default(uuid())
+  userId        String
+  amount        Decimal  @db.Decimal(10, 2)
+  type          String   // CREDIT or DEBIT
+  description   String
+  referenceId   String?  // Order ID or payment ID
+  balanceBefore Decimal  @db.Decimal(10, 2)
+  balanceAfter  Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("wallet_transactions")
+}
+
+// =============================================
+// REVIEWS & RATINGS
+// =============================================
+
+model Review {
+  id           String   @id @default(uuid())
+  customerId   String
+  restaurantId String
+  orderId      String?  @unique
+  rating       Int      // 1-5
+  comment      String?
+  response     String?  // Restaurant's response
+  isVerified   Boolean  @default(false) // Verified purchase
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  customer   User       @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@index([customerId])
+  @@index([restaurantId])
+  @@index([rating])
+  @@map("reviews")
+}
+
+// =============================================
+// ADDRESS MANAGEMENT
+// =============================================
+
+model Address {
+  id           String  @id @default(uuid())
+  userId       String
+  label        String  // "Home", "Work", "Other"
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  postalCode   String
+  country      String
+  latitude     Decimal @db.Decimal(10, 8)
+  longitude    Decimal @db.Decimal(11, 8)
+  // PostGIS Point for spatial queries
+  location     Unsupported("geometry(Point, 4326)")
+  isDefault    Boolean @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([location], type: Gist)
+  @@map("addresses")
+}
+
+// =============================================
+// NOTIFICATIONS
+// =============================================
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   // ORDER_UPDATE, PROMOTION, SYSTEM
+  isRead    Boolean  @default(false)
+  data      Json?    // Additional data
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
