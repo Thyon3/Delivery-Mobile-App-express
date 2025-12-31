@@ -30,6 +30,9 @@ import routes from '@/routes';
 // Import Socket.io service
 import { SocketService } from '@/services/socket.service';
 
+// Import GraphQL server
+import { createGraphQLServer } from '@/graphql/server';
+
 class Server {
   private app: Application;
   private httpServer: ReturnType<typeof createServer>;
@@ -104,6 +107,10 @@ class Server {
 
     // API routes
     this.app.use(`/api/${apiVersion}`, routes);
+
+    // GraphQL endpoint
+    const graphqlServer = createGraphQLServer();
+    this.app.use('/graphql', graphqlServer);
 
     // Root route
     this.app.get('/', (req, res) => {
