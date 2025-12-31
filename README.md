@@ -2,6 +2,18 @@
 
 Production-ready Express.js REST API for a Multi-vendor Delivery Application supporting Customers, Drivers, and Restaurants.
 
+## ✨ Highlights
+
+- 🔐 **Production-Ready Security**: JWT auth, rate limiting, input validation
+- 📍 **Advanced Geolocation**: PostGIS spatial queries for nearby search
+- ⚡ **Real-time Updates**: Socket.io for live order tracking
+- 💳 **Payment Integration**: Stripe with webhook verification
+- 🚀 **High Performance**: Redis caching, optimized queries
+- 📊 **Comprehensive Logging**: Winston with file rotation
+- 🐳 **Docker Ready**: Complete containerization setup
+- 📝 **Auto-generated API Docs**: Swagger/OpenAPI
+- 🧪 **Test Ready**: Jest configuration included
+
 ## 🚀 Features
 
 ### Core Features
@@ -266,6 +278,14 @@ MIT License
 ## 📞 Support
 
 For issues and questions, please open an issue on GitHub.
+
+---
+
+## 📊 Project Stats
+
+![GitHub repo size](https://img.shields.io/github/repo-size/yourusername/delivery-api)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/yourusername/delivery-api)
+![GitHub last commit](https://img.shields.io/github/last-commit/yourusername/delivery-api)
 
 ---
 
