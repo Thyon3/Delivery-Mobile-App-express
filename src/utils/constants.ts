@@ -1,0 +1,55 @@
+/**
+ * Application Constants
+ */
+
+export const ORDER_STATUS = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  PREPARING: 'PREPARING',
+  READY_FOR_PICKUP: 'READY_FOR_PICKUP',
+  OUT_FOR_DELIVERY: 'OUT_FOR_DELIVERY',
+  DELIVERED: 'DELIVERED',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED',
+} as const;
+
+export const PAYMENT_STATUS = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+} as const;
+
+export const USER_ROLES = {
+  CUSTOMER: 'CUSTOMER',
+  DRIVER: 'DRIVER',
+  RESTAURANT_OWNER: 'RESTAURANT_OWNER',
+  ADMIN: 'ADMIN',
+} as const;
+
+export const DRIVER_STATUS = {
+  OFFLINE: 'OFFLINE',
+  ONLINE: 'ONLINE',
+  BUSY: 'BUSY',
+  ON_BREAK: 'ON_BREAK',
+} as const;
+
+export const CACHE_TTL = {
+  SHORT: 60, // 1 minute
+  MEDIUM: 300, // 5 minutes
+  LONG: 3600, // 1 hour
+} as const;
+
+export const PAGINATION = {
+  DEFAULT_PAGE: 1,
+  DEFAULT_LIMIT: 20,
+  MAX_LIMIT: 100,
+} as const;
+
+export const GEOLOCATION = {
+  DEFAULT_SEARCH_RADIUS_KM: 10,
+  MAX_SEARCH_RADIUS_KM: 50,
+  BASE_DELIVERY_FEE: 2.99,
+  COST_PER_KM: 0.5,
+} as const;
