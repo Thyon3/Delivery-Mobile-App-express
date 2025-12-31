@@ -17,6 +17,7 @@ import uploadRoutes from './upload.routes';
 import promotionRoutes from './promotion.routes';
 import favoriteRoutes from './favorite.routes';
 import adminRoutes from './admin.routes';
+import statsRoutes from './stats.routes';
 
 const router = Router();
 
@@ -44,5 +45,6 @@ router.use('/upload', uploadRoutes);
 router.use('/promotions', promotionRoutes);
 router.use('/favorites', favoriteRoutes);
 router.use('/admin', adminRoutes);
+router.use('/stats', statsRoutes);
 
 export default router;
