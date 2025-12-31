@@ -36,6 +36,6 @@
       "@/validators/*": ["validators/*"]
     }
   },
-  "include": ["src/**/*", "healthcheck.js"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "**/*.test.ts"]
 }
