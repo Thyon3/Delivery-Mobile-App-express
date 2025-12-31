@@ -1,6 +1,6 @@
 {
   "name": "delivery-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Production-ready Express.js REST API for Multi-vendor Delivery Application supporting Customers, Drivers, and Restaurants with real-time tracking, geolocation services, and payment integration",
   "main": "dist/server.js",
   "scripts": {
