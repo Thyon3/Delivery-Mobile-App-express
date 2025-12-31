@@ -15,6 +15,8 @@ import notificationRoutes from './notification.routes';
 import searchRoutes from './search.routes';
 import uploadRoutes from './upload.routes';
 import promotionRoutes from './promotion.routes';
+import favoriteRoutes from './favorite.routes';
+import adminRoutes from './admin.routes';
 
 const router = Router();
 
@@ -40,5 +42,7 @@ router.use('/notifications', notificationRoutes);
 router.use('/search', searchRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/promotions', promotionRoutes);
+router.use('/favorites', favoriteRoutes);
+router.use('/admin', adminRoutes);
 
 export default router;
