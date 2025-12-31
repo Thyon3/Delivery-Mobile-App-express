@@ -1,0 +1,19 @@
+# Code Owners
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners
+* @maintainers
+
+# API routes
+/src/routes/ @backend-team
+
+# Database
+/prisma/ @database-team
+
+# Configuration
+/.github/ @devops-team
+/docker-compose.yml @devops-team
+/Dockerfile @devops-team
+
+# Documentation
+/*.md @documentation-team
