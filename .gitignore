@@ -35,6 +35,7 @@ coverage/
 
 # Uploads
 uploads/
+!uploads/.gitkeep
 
 # Prisma
 prisma/migrations/
