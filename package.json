@@ -14,12 +14,15 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:seed": "ts-node scripts/seed.ts",
+    "prisma:reset": "prisma migrate reset --force",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --maxWorkers=2",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"src/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\""
+    "format:check": "prettier --check \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "delivery",
