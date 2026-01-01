@@ -116,4 +116,73 @@ export class FavoriteService {
 
     return customer?.favoriteRestaurants.includes(restaurantId) || false;
   }
+
+  /**
+   * Add menu item to favorites
+   */
+  static async addFavoriteMenuItem(userId: string, menuItemId: string) {
+    await prisma.customer.update({
+      where: { userId },
+      data: {
+        favoriteMenuItems: {
+          push: menuItemId,
+        },
+      },
+    });
+
+    logger.info(`Menu Item ${menuItemId} added to favorites for user ${userId}`);
+    return { success: true };
+  }
+
+  /**
+   * Remove menu item from favorites
+   */
+  static async removeFavoriteMenuItem(userId: string, menuItemId: string) {
+    const customer = await prisma.customer.findUnique({
+      where: { userId },
+      select: { favoriteMenuItems: true },
+    });
+
+    if (customer) {
+      const updated = customer.favoriteMenuItems.filter((id) => id !== menuItemId);
+      await prisma.customer.update({
+        where: { userId },
+        data: { favoriteMenuItems: updated },
+      });
+    }
+
+    logger.info(`Menu Item ${menuItemId} removed from favorites for user ${userId}`);
+    return { success: true };
+  }
+
+  /**
+   * Get user's favorite menu items
+   */
+  static async getFavoriteMenuItems(userId: string) {
+    const customer = await prisma.customer.findUnique({
+      where: { userId },
+      select: { favoriteMenuItems: true },
+    });
+
+    if (!customer || customer.favoriteMenuItems.length === 0) {
+      return [];
+    }
+
+    const menuItems = await prisma.menuItem.findMany({
+      where: {
+        id: { in: customer.favoriteMenuItems },
+        isAvailable: true,
+      },
+      include: {
+        restaurant: {
+          select: {
+            name: true,
+          }
+        }
+      }
+    });
+
+    return menuItems;
+  }
 }
+

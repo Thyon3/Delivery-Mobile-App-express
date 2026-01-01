@@ -16,4 +16,8 @@ router.post('/', FavoriteController.addFavorite);
 router.delete('/:restaurantId', FavoriteController.removeFavorite);
 router.get('/check/:restaurantId', FavoriteController.checkFavorite);
 
+router.get('/menu-items', FavoriteController.getFavoriteMenuItems);
+router.post('/menu-items', FavoriteController.addFavoriteMenuItem);
+router.delete('/menu-items/:menuItemId', FavoriteController.removeFavoriteMenuItem);
+
 export default router;
