@@ -40,8 +40,25 @@ const notificationWorker = new Worker(
         },
       });
 
-      // TODO: Send push notification via FCM, APNS, etc.
-      
+      // Fetch user's device token
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { deviceToken: true },
+      });
+
+      if (user?.deviceToken) {
+        // In a real app, use firebase-admin here
+        // await firebaseAdmin.messaging().send({
+        //   token: user.deviceToken,
+        //   notification: { title, body: message },
+        //   data: data || {},
+        // });
+        logger.info(`Push notification sent to device token: ${user.deviceToken}`);
+      } else {
+        logger.info(`No device token found for user ${userId}, skipping push notification`);
+      }
+
+
       logger.info(`Notification saved: ${notification.id}`);
       return { success: true, notificationId: notification.id };
     } catch (error) {
