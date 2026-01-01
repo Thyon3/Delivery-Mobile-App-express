@@ -118,4 +118,16 @@ export class UserService {
 
     return transactions;
   }
+
+  /**
+   * Save device token
+   */
+  static async saveDeviceToken(userId: string, token: string) {
+    await prisma.user.update({
+      where: { id: userId },
+      data: { deviceToken: token },
+    });
+
+    logger.info(`Device token updated for user: ${userId}`);
+  }
 }

@@ -78,4 +78,19 @@ export class UserController {
     );
     return ResponseHelper.success(res, transactions, 'Transactions fetched successfully');
   });
+
+  /**
+   * Save device token
+   */
+  static saveDeviceToken = asyncHandler(async (req: Request, res: Response) => {
+    const userId = req.userId!;
+    const { token } = req.body;
+
+    if (!token) {
+      return ResponseHelper.error(res, 'Device token is required', 400);
+    }
+
+    await UserService.saveDeviceToken(userId, token);
+    return ResponseHelper.success(res, null, 'Device token saved successfully');
+  });
 }

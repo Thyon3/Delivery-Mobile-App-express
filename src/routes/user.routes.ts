@@ -16,6 +16,7 @@ router.put('/profile', UserController.updateProfile);
 router.get('/addresses', UserController.getAddresses);
 router.post('/addresses', UserController.createAddress);
 router.delete('/addresses/:id', UserController.deleteAddress);
+router.post('/device-token', UserController.saveDeviceToken);
 router.get('/wallet/balance', UserController.getWalletBalance);
 router.get('/wallet/transactions', UserController.getWalletTransactions);
 
