@@ -60,7 +60,7 @@
     "winston": "^3.11.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
-    "stripe": "^14.10.0",
+    "stripe": "^20.1.0",
     "dotenv": "^16.3.1",
     "express-async-errors": "^3.1.1",
     "cookie-parser": "^1.4.6",
